@@ -1,7 +1,6 @@
 package ca.parcplace.birdsong.android;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
@@ -13,10 +12,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import ca.parcplace.birdsong.R;
 
 public class CaptureActivity extends Activity {
-
+	
+	private BirdServiceResponse birdie;
+	private Location currentLocation;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -28,11 +31,43 @@ public class CaptureActivity extends Activity {
 		captureButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Log.d("capturing", "sound - I'm at " + getLocation());
+				Log.i("capturing song", "at location " + currentLocation);
 				Intent intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
-				startActivityForResult(intent, 1); // intent and requestCode of 1
+				startActivityForResult(intent, 1);
 			}
-		});		
+		});
+		
+		Button xenoLinkButton = (Button) findViewById(R.id.xenoLinkButton);
+		xenoLinkButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Uri link = getXenoCantoUri();
+				Log.i("external link", link.toString());
+				Intent intent = new Intent(Intent.ACTION_VIEW);
+				intent.setData(link);
+				startActivityForResult(intent, 2);
+			}
+		});	
+		
+		Button aviLinkButton = (Button) findViewById(R.id.aviLinkButton);
+		aviLinkButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Uri link = getAvibaseSearchUri();
+				Log.i("external link", link.toString());
+				Intent intent = new Intent(Intent.ACTION_VIEW);
+				intent.setData(link);
+				startActivityForResult(intent, 2);
+			}
+		});	
+	}
+	
+	private Uri getXenoCantoUri() {
+		return Uri.parse("http://xeno-canto.org/species/" + birdie.getGenus() + "-" + birdie.getSpecies());
+	}
+	
+	private Uri getAvibaseSearchUri() {
+		return Uri.parse("http://www.bsc-eoc.org/avibase/avibase.jsp?pg=search&qstr=" + birdie.getGenus() + "%20" + birdie.getSpecies());
 	}
 
 	@Override
@@ -48,57 +83,46 @@ public class CaptureActivity extends Activity {
 			if (resultCode == RESULT_OK) {
 				final Uri audioUri = intent.getData();
 				Log.i("captured", audioUri.getEncodedPath());
-
-				new Thread(new BirdWebService(getContentResolver(), audioUri)).start();
+				new BirdWebService(this, getContentResolver(), audioUri).execute();
 			}
 		}
 	}
-
+	
 	private void registerLocation() {
 		LocationManager mgr = (LocationManager) getSystemService(LOCATION_SERVICE);
 		for (String prov : mgr.getAllProviders()) {
-			Log.i("hi", getString(R.string.provider_found) + " " + prov);
+			Log.i("location provider", getString(R.string.provider_found) + " " + prov);
 		}
-
-		// get handle for LocationManager
-		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		// connect to the GPS location service
-		Location loc = lm.getLastKnownLocation("gps");
-		Log.i("testing", Boolean.toString(loc == null));
 
 		mgr.requestLocationUpdates(mgr.getAllProviders().get(1), 1000, 0,
-				new LocationListener() {
-					@Override
-					public void onStatusChanged(String provider, int status,
-							Bundle extras) {
-					}
+			new LocationListener() {
+				@Override
+				public void onStatusChanged(String provider, int status, Bundle extras) { }
 
-					@Override
-					public void onProviderEnabled(String provider) {
-					}
+				@Override
+				public void onProviderEnabled(String provider) { }
 
-					@Override
-					public void onProviderDisabled(String provider) {
-					}
+				@Override
+				public void onProviderDisabled(String provider) { }
 
-					@Override
-					public void onLocationChanged(Location location) {
-						Log.i("new loc", location.toString());
-					}
-				});
+				@Override
+				public void onLocationChanged(Location location) {
+					currentLocation = location;
+				}
+			});
 	}
 
-	private Location getLocation() {
-		LocationManager mgr = (LocationManager) getSystemService(LOCATION_SERVICE);
-		for (String prov : mgr.getAllProviders()) {
-			Log.i("hi", getString(R.string.provider_found) + " " + prov);
-		}
-
-		// get handle for LocationManager
-		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		// connect to the GPS location service
-		Location loc = lm.getLastKnownLocation("gps");
-
-		return loc;
+	void updateModel(BirdServiceResponse birdie) {
+		this.birdie = birdie;
+		
+		setText(R.id.genusResult, birdie.getGenus());
+		setText(R.id.speciesResult, birdie.getSpecies());
+		setText(R.id.subspeciesResult, birdie.getSubspecies());
+		setText(R.id.englishResult, birdie.getEnglishName());
+	}
+	
+	private void setText(int resource, String text) {
+		TextView view = (TextView) findViewById(resource);
+		view.setText(text);
 	}
 }

@@ -7,4 +7,11 @@
 	<string name="provider_found">Provs</string>
 	<string name="cannot_get_location">Where the fuck am I??</string>
 	<string name="capture_button">Capture</string>
+	<string name="genus">Genus</string>
+	<string name="species">Species</string>
+	<string name="subspecies">Subspecies</string>
+	<string name="english">English</string>
+	<string name="xenoLink">Open at xeno-canto</string>
+	<string name="aviLink">Open at avibase</string>
+		<string name="blank"></string>
 </resources>

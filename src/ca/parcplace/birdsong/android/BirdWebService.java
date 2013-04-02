@@ -18,38 +18,66 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.util.Log;
 
-class BirdWebService implements Runnable {
+class BirdWebService extends AsyncTask<Object, Integer, BirdServiceResponse> {
 	
+	private CaptureActivity activity;
 	private ContentResolver resolver;
 	private Uri audioUri;
 	private BirdServiceResponse result;
+	private ProgressDialog dialog;
 	
-	BirdWebService(ContentResolver resolver, Uri audioUri) {
+	BirdWebService(CaptureActivity activity, ContentResolver resolver, Uri audioUri) {
 		this.resolver = resolver;
 		this.audioUri = audioUri;
+		this.activity = activity;
 	}
 	
 	@Override
-	public void run() {
+	protected void onPreExecute() {
+		super.onPreExecute();
+		dialog = ProgressDialog.show(activity, "Please Be Patient", "Processing Song...", true, false);
+	}
+	
+	@Override
+	protected BirdServiceResponse doInBackground(Object... params) {
 		final HttpClient httpClient = new DefaultHttpClient();
 		final HttpContext localContext = new BasicHttpContext();
-		//final HttpPost httpPost = new HttpPost("http://birdsong.jelastic.servint.net/api");
-		final HttpPost httpPost = new HttpPost("http://192.168.1.100:8080/");
+		final HttpPost httpPost = new HttpPost("http://birdsong.jelastic.servint.net/api");
+		//final HttpPost httpPost = new HttpPost("http://192.168.1.100:8080/");
+		
+		Cursor c = resolver.query(audioUri, null, null, null, null);
+		if (!c.moveToFirst()) {
+			throw new RuntimeException("SHIT!");
+		}
+		
+		for (String name : c.getColumnNames())
+			Log.d("audio column", name);
+		
+		String mimetype = c.getString(c.getColumnIndex("mime_type"));
+		final long size = c.getLong(c.getColumnIndex("_size"));
+		Log.d("recorded", "mime-type: " + mimetype + " size: " + size);
+		c.close();
 		
 		InputStream inStream = null;
 		try {
 			inStream = resolver.openInputStream(audioUri);
 
-			
 			MultipartEntity mpEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+			InputStreamBody binBody = new InputStreamBody(inStream, "file") {
+				@Override
+				public long getContentLength() {
+					return size;
+				}
+			};
 			
-			InputStreamBody binBody = new InputStreamBody(inStream, "file");
-			mpEntity.addPart("file", binBody);
-			
+			mpEntity.addPart("file", binBody);			
 			httpPost.setEntity(mpEntity);
 
 			HttpResponse response = httpClient.execute(httpPost, localContext);
@@ -78,10 +106,14 @@ class BirdWebService implements Runnable {
 			result.setSubspecies(json.getString("subspecies"));
 			
 			Log.i("result", result.toString());
+			
+			try { Thread.sleep(4000); } catch (Exception e) { }
+			
+			return result;
 		} catch (IOException e) {
-			Log.e("io", e.getMessage());
+			Log.e("io", "error occurred: " + e.getMessage(), e);
 		} catch (JSONException e) {
-			Log.e("json", e.getMessage());
+			Log.e("json", "error occurred: " + e.getMessage(), e);
 		} finally {
 			if (inStream != null) {
 				try {
@@ -90,7 +122,17 @@ class BirdWebService implements Runnable {
 					Log.e("something", "could not close stream", e);
 				}
 			}
-		}					
+		}
+		return BirdServiceResponse.UNKNOWN;
+	}
+	
+	@Override
+	protected void onPostExecute(BirdServiceResponse response) {
+		super.onPostExecute(response);
+		
+		activity.updateModel(response);
+		
+		dialog.dismiss();
 	}
 	
 	BirdServiceResponse getResult() {

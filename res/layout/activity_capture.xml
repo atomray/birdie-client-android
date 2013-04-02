@@ -24,4 +24,108 @@
         android:layout_marginTop="43dp"
         android:text="@string/capture_button" />
 
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_below="@+id/captureButton"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="62dp"
+        android:orientation="vertical" >
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/genusView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/linearLayout1"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_marginBottom="18dp"
+        android:text="@string/genus"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/speciesView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/genusView"
+        android:layout_below="@+id/linearLayout1"
+        android:text="@string/species"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/subspeciesView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/speciesView"
+        android:layout_below="@+id/speciesView"
+        android:layout_marginTop="27dp"
+        android:text="@string/subspecies"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/englishView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/subspeciesView"
+        android:layout_below="@+id/subspeciesView"
+        android:layout_marginTop="22dp"
+        android:text="@string/english"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/genusResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/genusView"
+        android:layout_alignBottom="@+id/genusView"
+        android:layout_alignLeft="@+id/captureButton"
+        android:layout_marginLeft="48dp"
+        android:text="@string/blank" />
+
+    <TextView
+        android:id="@+id/speciesResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/speciesView"
+        android:layout_alignBottom="@+id/speciesView"
+        android:layout_alignLeft="@+id/genusResult"
+        android:text="@string/blank" />
+
+    <TextView
+        android:id="@+id/subspeciesResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/englishView"
+        android:layout_alignLeft="@+id/speciesResult"
+        android:text="@string/blank" />
+
+    <TextView
+        android:id="@+id/englishResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/englishView"
+        android:layout_alignBottom="@+id/englishView"
+        android:layout_alignLeft="@+id/subspeciesResult"
+        android:text="@string/blank" />
+
+    <Button
+        android:id="@+id/xenoLinkButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/englishView"
+        android:layout_below="@+id/englishView"
+        android:layout_marginTop="18dp"
+        android:layout_toLeftOf="@+id/englishResult"
+        android:text="@string/xenoLink" />
+
+    <Button
+        android:id="@+id/aviLinkButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/xenoLinkButton"
+        android:layout_alignParentBottom="true"
+        android:text="@string/aviLink" />
+
 </RelativeLayout>
