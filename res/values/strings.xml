@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Bird Songz</string>
+    <string name="action_settings">Settings</string>
+    <string name="instructions1">Welcome to Bird Songz - capture some bird song and we will attempt to identify it.</string>
+	<string name="provider_found">Provs</string>
+	<string name="cannot_get_location">Where the fuck am I??</string>
+	<string name="capture_button">Capture</string>
+</resources>
