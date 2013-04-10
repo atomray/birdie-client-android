@@ -1,6 +1,8 @@
 package ca.parcplace.birdsong.android;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,24 +21,19 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
 class BirdWebService extends AsyncTask<Object, Integer, BirdServiceResponse> {
 	
+	private String filename;
 	private CaptureActivity activity;
-	private ContentResolver resolver;
-	private Uri audioUri;
 	private BirdServiceResponse result;
 	private ProgressDialog dialog;
 	
-	BirdWebService(CaptureActivity activity, ContentResolver resolver, Uri audioUri) {
-		this.resolver = resolver;
-		this.audioUri = audioUri;
+	BirdWebService(CaptureActivity activity, String filename) {
 		this.activity = activity;
+		this.filename = filename;
 	}
 	
 	@Override
@@ -49,31 +46,21 @@ class BirdWebService extends AsyncTask<Object, Integer, BirdServiceResponse> {
 	protected BirdServiceResponse doInBackground(Object... params) {
 		final HttpClient httpClient = new DefaultHttpClient();
 		final HttpContext localContext = new BasicHttpContext();
-		final HttpPost httpPost = new HttpPost("http://birdsong.jelastic.servint.net/api");
-		//final HttpPost httpPost = new HttpPost("http://192.168.1.100:8080/");
-		
-		Cursor c = resolver.query(audioUri, null, null, null, null);
-		if (!c.moveToFirst()) {
-			throw new RuntimeException("SHIT!");
-		}
-		
-		for (String name : c.getColumnNames())
-			Log.d("audio column", name);
-		
-		String mimetype = c.getString(c.getColumnIndex("mime_type"));
-		final long size = c.getLong(c.getColumnIndex("_size"));
-		Log.d("recorded", "mime-type: " + mimetype + " size: " + size);
-		c.close();
-		
+		//final HttpPost httpPost = new HttpPost("http://birdsong.jelastic.servint.net/api");
+		final HttpPost httpPost = new HttpPost("http://192.168.43.245:8080/");
+				
 		InputStream inStream = null;
 		try {
-			inStream = resolver.openInputStream(audioUri);
+			final File file = new File(filename);
+			Log.i("sending to server", "filename: " + filename + " size " + file.length());
+			
+			inStream = new FileInputStream(file);
 
 			MultipartEntity mpEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
 			InputStreamBody binBody = new InputStreamBody(inStream, "file") {
 				@Override
 				public long getContentLength() {
-					return size;
+					return file.length();
 				}
 			};
 			

@@ -15,21 +15,12 @@
         android:text="@string/instructions1"
         android:textAlignment="textStart" />
 
-    <Button
-        android:id="@+id/captureButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="43dp"
-        android:text="@string/capture_button" />
-
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/captureButton"
+        android:layout_below="@+id/textView1"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="62dp"
         android:orientation="vertical" >
@@ -80,7 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/genusView"
         android:layout_alignBottom="@+id/genusView"
-        android:layout_alignLeft="@+id/captureButton"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="48dp"
         android:text="@string/blank" />
 
@@ -127,5 +118,23 @@
         android:layout_alignLeft="@+id/xenoLinkButton"
         android:layout_alignParentBottom="true"
         android:text="@string/aviLink" />
+
+    <ImageButton
+        android:id="@+id/record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/textView1"
+        android:layout_alignTop="@+id/genusResult"
+        android:contentDescription="start"
+        android:src="@drawable/ic_launcher" />
+
+    <ImageButton
+        android:id="@+id/stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/record"
+        android:layout_alignTop="@+id/subspeciesResult"
+        android:contentDescription="stop"
+        android:src="@drawable/ic_launcher" />
 
 </RelativeLayout>
