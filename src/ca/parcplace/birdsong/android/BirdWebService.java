@@ -46,8 +46,8 @@ class BirdWebService extends AsyncTask<Object, Integer, BirdServiceResponse> {
 	protected BirdServiceResponse doInBackground(Object... params) {
 		final HttpClient httpClient = new DefaultHttpClient();
 		final HttpContext localContext = new BasicHttpContext();
-		//final HttpPost httpPost = new HttpPost("http://birdsong.jelastic.servint.net/api");
-		final HttpPost httpPost = new HttpPost("http://192.168.43.245:8080/");
+		final HttpPost httpPost = new HttpPost("http://birdie.jelastic.servint.net/api");
+		//final HttpPost httpPost = new HttpPost("http://192.168.1.110:8080/");
 				
 		InputStream inStream = null;
 		try {
